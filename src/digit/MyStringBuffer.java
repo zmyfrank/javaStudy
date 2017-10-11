@@ -13,13 +13,19 @@ public class MyStringBuffer implements IStringBuffer {
     }
 
     public MyStringBuffer(String str) {
-        if (str != null) {
-            value = str.toCharArray();
+        this();
+        if (str == null) {
+            return;
         }
         length = value.length;
-        if (length > capacity) {
+        if (str.length() > capacity) {
             capacity = length * 2;
+            value = new char[capacity];
         }
+        if (str.length() <= capacity) {
+            System.arraycopy(str.toCharArray(), 0, value, 0, str.length());
+        }
+        length = str.length();
     }
 
     @Override
@@ -31,17 +37,17 @@ public class MyStringBuffer implements IStringBuffer {
 
     @Override
     public void append(String str) {
-
+        insert(length, str);
     }
 
     @Override
     public void append(char c) {
-
+        append(String.valueOf(c));
     }
 
     @Override
     public void insert(int pos, char b) {
-
+        insert(pos, String.valueOf(b));
     }
 
     @Override
@@ -52,22 +58,39 @@ public class MyStringBuffer implements IStringBuffer {
             return;
         if (b == null)
             return;
+        //扩容
         if (length + b.length() > capacity) {
             capacity = (int) ((length + b.length()) * 1.5f);
             char[] realValue = new char[capacity];
             System.arraycopy(value, 0, realValue, 0, length);
             value = realValue;
         }
+        char[] cs = b.toCharArray();
+        //腾出空间来给它复制
+        System.arraycopy(value, pos, value, pos + cs.length, length - pos);
+        //插入到制定位置
+        System.arraycopy(cs, 0, value, pos, cs.length);
+        length = length + cs.length;
     }
 
     @Override
     public void delete(int start) {
-
+        delete(start, length);
     }
 
     @Override
     public void delete(int start, int end) {
-
+        if (start < 0 || end < 0) {
+            return;
+        }
+        if (start > length || end > length) {
+            return;
+        }
+        if (start > end) {
+            return;
+        }
+        System.arraycopy(value, end, value, start, end - start);
+        length = end - start;
     }
 
     @Override
@@ -81,6 +104,6 @@ public class MyStringBuffer implements IStringBuffer {
 
     @Override
     public int length() {
-        return 0;
+        return length;
     }
 }
