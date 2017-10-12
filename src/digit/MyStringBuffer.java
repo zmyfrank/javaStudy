@@ -8,11 +8,11 @@ public class MyStringBuffer implements IStringBuffer {
     //存放真正字符串的char数组
     private char[] value;
 
-    public MyStringBuffer() {
+    private MyStringBuffer() {
         value = new char[capacity];
     }
 
-    public MyStringBuffer(String str) {
+    MyStringBuffer(String str) {
         this();
         if (str == null) {
             return;
