@@ -5,7 +5,7 @@ import property.Item;
 public class Hero {
     public String name; //姓名
 
-    public float hp; //血量
+    private float hp; //血量
 
     public float armor; //护甲
 
@@ -80,8 +80,25 @@ public class Hero {
         }
     }
 
+    public void attackHero(Hero h) throws EnemyHeroIsDeadExpection{
+        if (h.hp==0){
+            throw new EnemyHeroIsDeadExpection(h.name +"已经挂了，不能释放技能");
+        }
+    }
+
     public static void main(String[] args) {
-        Hero.EnemyCrystal xx = new Hero.EnemyCrystal();
-        xx.CheackIfvictory();
+        Hero garen =  new Hero();
+        garen.name = "盖伦";
+        garen.hp = 616;
+
+        Hero teemo =  new Hero();
+        teemo.name = "提莫";
+        teemo.hp = 0;
+        try {
+            garen.attackHero(teemo);
+        } catch (EnemyHeroIsDeadExpection enemyHeroIsDeadExpection) {
+            System.out.println("具体异常原因: \t"+enemyHeroIsDeadExpection.getMessage());
+            enemyHeroIsDeadExpection.printStackTrace();
+        }
     }
 }

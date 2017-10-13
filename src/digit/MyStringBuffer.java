@@ -1,5 +1,7 @@
 package digit;
 
+import java.awt.*;
+
 public class MyStringBuffer implements IStringBuffer {
     //初始长度
     private int capacity = 16;
@@ -7,7 +9,34 @@ public class MyStringBuffer implements IStringBuffer {
     private int length = 0;
     //存放真正字符串的char数组
     private char[] value;
+    class IndexIsNagetiveException extends Exception {
+        public IndexIsNagetiveException() {
+        }
 
+        public IndexIsNagetiveException(String message) {
+            super(message);
+        }
+    }
+
+    class IndexIsOutofRangeException extends Exception {
+        public IndexIsOutofRangeException() {
+        }
+
+        public IndexIsOutofRangeException(String message) {
+            super(message);
+        }
+    }
+    public void cheakOutRange(int pos) throws IndexIsOutofRangeException {
+        if (pos>length){
+            throw new IndexIsOutofRangeException("下标超出范围异常");
+        }
+    }
+
+    public void cheaknagetive(int pos) throws IndexIsNagetiveException {
+        if (pos<0){
+            throw new IndexIsNagetiveException("下标为负异常");
+        }
+    }
     private MyStringBuffer() {
         value = new char[capacity];
     }
@@ -52,10 +81,13 @@ public class MyStringBuffer implements IStringBuffer {
 
     @Override
     public void insert(int pos, String b) {
-        if (pos > length)
-            return;
-        if (pos < 0)
-            return;
+        try {
+            cheakOutRange(pos);
+            cheaknagetive(pos);
+        } catch (IndexIsOutofRangeException | IndexIsNagetiveException e) {
+            e.printStackTrace();
+            System.out.println("具体原因是"+e.getMessage());
+        }
         if (b == null)
             return;
         //扩容
