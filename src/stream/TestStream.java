@@ -1,70 +1,76 @@
 package stream;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class TestStream {
-    /**
-     * 拆分的思路，先把源文件的所有内容读取到内存中，然后从内存中挨个分到子文件里
-     * @param srcFile 要拆分的源文件
-     * @param eachSize 按照这个大小，拆分
-     */
-    private static void splitFile(File srcFile, int eachSize) {
-
-        if (0 == srcFile.length())
-            throw new RuntimeException("文件长度为0，不可拆分");
-
-        byte[] fileContent = new byte[(int) srcFile.length()];
-        // 先把文件读取到数组中
+    public static void splitFile(File file, int eachSize) {
+        if (!file.exists()) {
+            throw new RuntimeException("文件不存在或长度为0，不可拆分！");
+        }
+        byte[] fileContent = new byte[(int) file.length()];
         try {
-            FileInputStream fis = new FileInputStream(srcFile);
-            fis.read(fileContent);
-            fis.close();
+            FileInputStream fip = new FileInputStream(file);
+            fip.read(fileContent);
+            fip.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        // 计算需要被划分成多少份子文件
-        int fileNumber;
-        // 文件是否能被整除得到的子文件个数是不一样的
-        // (假设文件长度是25，每份的大小是5，那么就应该是5个)
-        // (假设文件长度是26，每份的大小是5，那么就应该是6个)
-        if (0 == fileContent.length % eachSize)
-            fileNumber = fileContent.length / eachSize;
-        else
-            fileNumber = fileContent.length / eachSize + 1;
-
-        for (int i = 0; i < fileNumber; i++) {
-            String eachFileName = srcFile.getName() + "-" + i;
-            File eachFile = new File(srcFile.getParent(), eachFileName);
+        int fileQuantity;
+        if (fileContent.length % eachSize == 0) {
+            fileQuantity = fileContent.length / eachSize;
+        } else {
+            fileQuantity = (fileContent.length / eachSize) + 1;
+        }
+        for (int i = 0; i < fileQuantity; i++) {
+            String fileName = file.getName() + "-" + i;
+            File eachFile = new File(file.getParent(), fileName);
             byte[] eachContent;
-
-            // 从源文件的内容里，复制部分数据到子文件
-            // 除开最后一个文件，其他文件大小都是100k
-            // 最后一个文件的大小是剩余的
-            if (i != fileNumber - 1) // 不是最后一个
+            if (i != fileQuantity - 1) {
                 eachContent = Arrays.copyOfRange(fileContent, eachSize * i, eachSize * (i + 1));
-            else // 最后一个
+            } else {
                 eachContent = Arrays.copyOfRange(fileContent, eachSize * i, fileContent.length);
-
+            }
             try {
-                // 写出去
-                FileOutputStream fos = new FileOutputStream(eachFile);
-                fos.write(eachContent);
-                // 记得关闭
-                fos.close();
-                System.out.printf("输出子文件%s，其大小是 %d字节%n", eachFile.getAbsoluteFile(), eachFile.length());
+                FileOutputStream fout = new FileOutputStream(eachFile);
+                fout.write(eachContent);
+                fout.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
     }
 
-    private static void mergeFile();
+    public static void mergeFile(String fileName, String filePath) {
+        int i = 0;
+        File file = new File(filePath, fileName + "-new");
+        try {
+            FileOutputStream fout = new FileOutputStream(file);
+            while (true) {
+                File eachFile = new File(filePath, fileName + "-" + i++);
+                if (!eachFile.exists()) {
+                    break;
+                }
+                FileInputStream fis = new FileInputStream(eachFile);
+                byte[] eachContent = new byte[(int) eachFile.length()];
+                fis.read(eachContent);
+                fis.close();
+                fout.write(eachContent);
+                fout.flush();
+            }
+            fout.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
-        File file = new File("e:/WeChat/WeChat.exe");
-        int size = 100 * 1024;
-        splitFile(file, size);
+//        File file = new File("d:/vueTest/yarn.lock");
+//        int eachSize = 1024 * 20;//20kb
+//        splitFile(file, eachSize);
+        mergeFile("yarn.lock", "d:/vueTest");
     }
 }
