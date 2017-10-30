@@ -5,7 +5,7 @@ import property.Item;
 public class Hero {
     public String name; //姓名
 
-    private float hp; //血量
+    public float hp; //血量
 
     public float armor; //护甲
 
@@ -18,7 +18,6 @@ public class Hero {
     }
 
     public Hero(String name) {
-        System.out.println("Hero的有一个参数的构造方法 ");
         this.name = name;
     }
 
@@ -42,6 +41,10 @@ public class Hero {
     public void kill(Mortal m) {
         System.out.println(name + "放了一个大招，");
         m.die();
+    }
+
+    public String toString(){
+        return this.name;
     }
 
     public boolean equals(Object o) {
