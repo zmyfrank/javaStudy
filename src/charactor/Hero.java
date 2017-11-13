@@ -2,12 +2,14 @@ package charactor;
 
 import property.Item;
 
-public class Hero {
+public class Hero implements Comparable<Hero> {
     public String name; //姓名
 
     public float hp; //血量
 
     public float armor; //护甲
+
+    public float damage;
 
     public int moveSpeed; //移动速度
 
@@ -26,9 +28,16 @@ public class Hero {
         this.hp = hp;
     }
 
+    public Hero(String name, float hp, float damage) {
+        this.name = name;
+        this.damage = damage;
+        this.hp = hp;
+    }
+
     public void battleWin() {
         System.out.println("hero battle win");
     }
+
     public static void battleWin2() {
         System.out.println("hero battle win");
     }
@@ -43,7 +52,7 @@ public class Hero {
         m.die();
     }
 
-    public String toString(){
+    public String toString() {
         return this.name;
     }
 
@@ -83,25 +92,30 @@ public class Hero {
         }
     }
 
-    public void attackHero(Hero h) throws EnemyHeroIsDeadExpection{
-        if (h.hp==0){
-            throw new EnemyHeroIsDeadExpection(h.name +"已经挂了，不能释放技能");
+    public void attackHero(Hero h) throws EnemyHeroIsDeadExpection {
+        if (h.hp == 0) {
+            throw new EnemyHeroIsDeadExpection(h.name + "已经挂了，不能释放技能");
         }
     }
 
     public static void main(String[] args) {
-        Hero garen =  new Hero();
+        Hero garen = new Hero();
         garen.name = "盖伦";
         garen.hp = 616;
 
-        Hero teemo =  new Hero();
+        Hero teemo = new Hero();
         teemo.name = "提莫";
         teemo.hp = 0;
         try {
             garen.attackHero(teemo);
         } catch (EnemyHeroIsDeadExpection enemyHeroIsDeadExpection) {
-            System.out.println("具体异常原因: \t"+enemyHeroIsDeadExpection.getMessage());
+            System.out.println("具体异常原因: \t" + enemyHeroIsDeadExpection.getMessage());
             enemyHeroIsDeadExpection.printStackTrace();
         }
+    }
+
+    @Override
+    public int compareTo(Hero o) {
+        return (int) (damage - o.damage);
     }
 }
