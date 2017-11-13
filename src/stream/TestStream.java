@@ -12,14 +12,13 @@ public class TestStream {
             throw new RuntimeException("文件不存在或长度为0，不可拆分！");
         }
         byte[] fileContent = new byte[(int) file.length()];
-        try {
-            FileInputStream fip = new FileInputStream(file);
-            fip.read(fileContent);
-            fip.close();
-        } catch (IOException e) {
+        int fileQuantity;
+        try (FileInputStream fip = new FileInputStream(file)) {
+                fip.read(fileContent);
+                fip.close();
+        }  catch (IOException e) {
             e.printStackTrace();
         }
-        int fileQuantity;
         if (fileContent.length % eachSize == 0) {
             fileQuantity = fileContent.length / eachSize;
         } else {
