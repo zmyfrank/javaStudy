@@ -113,6 +113,10 @@ public class Hero implements Comparable<Hero> {
             enemyHeroIsDeadExpection.printStackTrace();
         }
     }
+    public boolean matched(){
+        return this.hp>100&&this.damage<50;
+    }
+
 
     @Override
     public int compareTo(Hero o) {
