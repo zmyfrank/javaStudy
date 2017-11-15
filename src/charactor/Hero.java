@@ -16,7 +16,7 @@ public class Hero implements Comparable<Hero> {
     static String copyright;
 
     public Hero() {
-        System.out.println("Hero 的构造方法");
+
     }
 
     public Hero(String name) {
@@ -50,10 +50,6 @@ public class Hero implements Comparable<Hero> {
     public void kill(Mortal m) {
         System.out.println(name + "放了一个大招，");
         m.die();
-    }
-
-    public String toString() {
-        return this.name;
     }
 
     public boolean equals(Object o) {
@@ -92,34 +88,40 @@ public class Hero implements Comparable<Hero> {
         }
     }
 
-    public void attackHero(Hero h) throws EnemyHeroIsDeadExpection {
-        if (h.hp == 0) {
-            throw new EnemyHeroIsDeadExpection(h.name + "已经挂了，不能释放技能");
-        }
-    }
 
     public static void main(String[] args) {
-        Hero garen = new Hero();
-        garen.name = "盖伦";
-        garen.hp = 616;
 
-        Hero teemo = new Hero();
-        teemo.name = "提莫";
-        teemo.hp = 0;
-        try {
-            garen.attackHero(teemo);
-        } catch (EnemyHeroIsDeadExpection enemyHeroIsDeadExpection) {
-            System.out.println("具体异常原因: \t" + enemyHeroIsDeadExpection.getMessage());
-            enemyHeroIsDeadExpection.printStackTrace();
-        }
-    }
-    public boolean matched(){
-        return this.hp>100&&this.damage<50;
+
     }
 
+    public boolean matched() {
+        return this.hp > 100 && this.damage < 50;
+    }
+
+    @Override
+    public String toString() {
+        return "Hero{" +
+                "name='" + name + '\'' +
+                ", hp=" + hp +
+                ", damage=" + damage +
+                '}';
+    }
 
     @Override
     public int compareTo(Hero o) {
         return (int) (damage - o.damage);
+    }
+
+    public void attackHero(Hero h) {
+        h.hp -= damage;
+        System.out.format("%s 正在攻击 %s, %s的血变成了 %.0f%n", name, h.name, h.name, h.hp);
+
+        if (h.isDead()){
+            System.out.println(h.name + "死了！");
+        }
+    }
+
+    public boolean isDead() {
+        return 0 >= hp;
     }
 }
