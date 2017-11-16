@@ -124,4 +124,25 @@ public class Hero implements Comparable<Hero> {
     public boolean isDead() {
         return 0 >= hp;
     }
+
+    //回血
+    public synchronized void recover(){
+        if (hp==616){
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        hp+=1;
+        System.out.printf("%s 回血1点,增加血后，%s的血量是%.0f%n", name, name, hp);
+        this.notify();
+    }
+
+    //掉血
+    public synchronized void hurt(){
+        hp-=1;
+        System.out.printf("%s 减血1点,减少血后，%s的血量是%.0f%n", name, name, hp);
+        this.notify();
+    }
 }

@@ -18,13 +18,16 @@ public class ExhaustivePassword extends Thread {
 
     @Override
     public void run() {
-        guessPassWorld(this.passWorlds, 0, passWorld);
+        char[] chars = new char[passWorld.length()];
+        guessPassWorld(chars, 0, passWorld);
     }
+
 
     public void guessPassWorld(char[] chars, int index, String passWorld) {
         if (found) {
             return;
         }
+        //不知道如何匹配出来每一个
         for (short i = '0'; i < 'z'; i++) {
             char a = (char) i;
             if (!Character.isLetterOrDigit(a)) {
@@ -34,11 +37,12 @@ public class ExhaustivePassword extends Thread {
             if (index < passWorld.length() - 1) {
                 guessPassWorld(chars, index + 1, passWorld);
             } else {
-                String guessPassWorld = new String(chars);
-                passWorlds.add(guessPassWorld);
-                if (guessPassWorld.equals(passWorld)) {
-                    System.out.println("找到了真正的密码，密码是:" + guessPassWorld);
-                    found = false;
+                String guessPassWorldString = new String(chars);
+                passWorlds.add(guessPassWorldString);
+                if (guessPassWorldString.equals(passWorld)) {
+                    System.out.println("找到了真正的密码，密码是:" + guessPassWorldString);
+                    found = true;
+                    return;
                 }
             }
         }

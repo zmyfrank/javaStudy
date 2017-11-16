@@ -2,22 +2,23 @@ package collection;
 
 import charactor.Hero;
 
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * @author: Frank
  * @Date: 2017/10/30 10:28
  */
 public class StackIm implements Stack {
-    private LinkedList<Hero> heroes = new LinkedList<>();
+    private LinkedList<Hero> heroes =(LinkedList<Hero>) Collections.synchronizedList(new LinkedList<Hero>());
 
+    //变为线程安全的之后，以后的都不用加上synchronizd来进行修饰了
     @Override
-    public void push(Hero h) {
+    public synchronized void push(Hero h) {
         heroes.addLast(h);
     }
 
     @Override
-    public Hero pull() {
+    public synchronized Hero pull() {
         return heroes.removeLast();
     }
 
