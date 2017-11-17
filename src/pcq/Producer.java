@@ -29,6 +29,11 @@ public class Producer extends Thread {
             char c = randomString();
             System.out.println("压入"+c);
             list.push(c);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

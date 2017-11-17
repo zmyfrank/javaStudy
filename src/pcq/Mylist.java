@@ -10,11 +10,8 @@ import java.util.LinkedList;
 public class Mylist<T> {
     private LinkedList<T> list = new LinkedList<>();
 
-    public Mylist() {
-        Collections.synchronizedList(list);
-    }
 
-    public T pull() {
+    public synchronized T pull() {
         while (list.isEmpty()) {
             try {
                 this.wait();
@@ -22,12 +19,11 @@ public class Mylist<T> {
                 e.printStackTrace();
             }
         }
-        T t = list.removeLast();
-        this.notify();
-        return t;
+        this.notifyAll();
+        return list.removeLast();
     }
 
-    public void push(T t) {
+    public synchronized void push(T t) {
         while (list.size() == 200) {
             try {
                 this.wait();
@@ -35,6 +31,7 @@ public class Mylist<T> {
                 e.printStackTrace();
             }
         }
+        this.notifyAll();
         list.addLast(t);
     }
 

@@ -14,7 +14,13 @@ public class Consumer extends Thread {
     @Override
     public void run() {
         while (true){
-            System.out.println("弹出"+list.pull());
+            char c = list.pull();
+            System.out.println("弹出"+c);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
