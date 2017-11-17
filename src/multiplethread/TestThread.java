@@ -2,33 +2,42 @@ package multiplethread;
 
 import charactor.Hero;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Objects;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author: Frank
  * @Date: 2017/11/15 10:00
  */
 public class TestThread {
-    public static void main(String[] args) {
+    static ThreadPoolExecutor threadPool = new ThreadPoolExecutor(10, 15, 60, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>());
 
-        final Hero gareen = new Hero();
-        gareen.name = "盖伦";
-        gareen.hp = 616;
-
-        Thread t2 = new Thread(){
-            public void run(){
-                while(true){
-                    gareen.recover();
-
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-
+    public static void searchFile(File file, String search) {
+        if (file.isFile()) {
+            if (file.getName().toLowerCase().endsWith(".java")) {
+                SearchFileThread searchFileThread = new SearchFileThread(file, search);
+                threadPool.execute(searchFileThread);
             }
-        };
-        t2.start();
+        }
+        if (file.isDirectory()) {
+            File[] file1 = file.listFiles();
+            assert file1 != null;
+            for (File f :
+                    file1) {
+                searchFile(f, search);
+            }
+        }
+    }
 
+    public static void main(String[] args) {
+        File file = new File("d:/mywork/javaStudy");
+        String searchName1 = "1";
+        String searchName2 = "u";
+        searchFile(file,searchName1);
+        searchFile(file,searchName2);
     }
 }
