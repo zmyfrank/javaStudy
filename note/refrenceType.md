@@ -229,6 +229,133 @@ let rexp2 = new RegExp("[bc]at","i")
 
 `toString tolocaleString`：这两个方法都会返回正则表达式的字面量，跟创建正则的方法无关
 
-- function类型：
+- function类型：function是js中最优意思的一个东西，它实际上也是一个对象，并且它有以下几种创建方法：
+```
+//函数声明
+funtion test(arg1){
+    alert(arg1)
+}
+//表达式
+var test = function(arg1){
+    alert(arg1)
+};
+//构造函数（不推荐）
+var teest = new Fction("arg1","alert(arg1)")
+```
+但是我们并不推荐使用构造函数的方式来创建方法，因为这样会让导致代码两次解析，第一次是解析常规ecma代码，第二次是解析传入的字符串。而函数声明和
+函数表达式两种声明函数的方法，也有一些区别，举个栗子
+```
+//这段代码不会报错
+console.log(sum(1,2))
+function sum(num1, num2) {
+    return num1 +num2
+}
 
+//这段代码会报错
+console.log(sum(1,2))
+let sum = function (num1, num2) {
+    return num1 +num2
+}
+```
+为什么两种差不多的方式，会有这种区别呢，那是因为js中有着函数声明提升的机制，在代码开始执行之前，第一个方法实际上已经在内存中了，所以可以直接
+提取出来使用个，而使用表达式的时候，sum中最开始被读取的时候，里面存的是undefined，当执行了真正的赋值操作后，它才会存有指向函数的指针，当然
+这两种方式，除了这个区别外，并没有其他区别。
 
+- 函数是**对象**，函数名只是指向这个对象的指针，举个栗子：
+```
+ let sum = function (arg1, arg2) {
+     return arg1+arg2
+ };
+ let anOtherSum = sum;
+ console.log(sum(1,2));  //3
+ console.log(anOtherSum(1,2));   //3
+```
+
+- 没有重载，在java等语言中，当你传入不同数量的变量时，就可以对应不同的方法，但是我们的js并不能做到，从前面的例子中我们能够知道，函数只是一
+个特殊的对象，所以是没有重载说法的。
+
+- 作为值的函数：函数的本身就是一个变量，所以函数也可以当做值来使用，所以我们不仅可以将函数作为参数传入一个函数中，也可以将函数当成一个函数的
+返回，举个栗子：
+```
+function extend(fn1, arg) {
+    return fn1(arg)
+}
+function sum(arg1) {
+    return arg1 + 20
+}
+console.log(extend(sum,10)) //30
+```
+这里我们要注意，如果我们要访问一个函数，那直接输入函数名就行了，但是如果我们要运行一个函数，就必须在函数名后加上括号，只要函数名后面有括号，
+那么函数就会被运行，我们再举个栗子：
+```
+function extend(arg) {
+    return  function sum() {
+        return arg + 20
+    }
+}
+console.log(extend(10)()) //30
+```
+这里，如果我们只写`extend(10)`那么打印出来就只会是一个函数，必须要再后面再加个括号让它运行。
+
+- 函数内部的属性：
+
+`arguments`：这个属性我们在前面接触过，它是一个类数组，里面保存着传入函数的参数
+
+`this`：this引用的是函数据以执行的环境对象；
+
+- 函数的属性和方法：
+
+`length`：表示函数的arguments（参数）的个数。
+
+`prototype`：对于es中的引用类型而言，prototype中保存的是他们的实例属性，也就是说`toString`、`valueOf`等方法，都是保存在`prototype`中，只
+是通过他们的实例来访问罢了，在创建自定义属性和实现继承时，prototype也是异常重要的，而且在es5中prototype中的属性是不可枚举的，所以在使用
+for-in的时候无法遍历出prototype中的属性。
+
+每个函数都包含两个非继承而来的方法`apply`、`call`，这两个方法的作用都是将函数放进特定的执行环境中执行，也即是改变`this`的指向。
+
+`apply`：第一个参数是绑定执行环境（this的指向），第二个参宿是一个数组，里面存放的是函数需要传入的值，也就是arguments对象
+```
+function sum(num1,num2) {
+    return num1+num2
+}
+function test(num1,num2) {
+    return sum.apply(this,arguments)
+}
+console.log(test(1,2))
+```
+`call`：它接受的参数完全跟`apply`相同，只是它必须将传入的每个参数都一一列出来
+```
+function sum(num1,num2) {
+    return num1+num2
+}
+function test(num1,num2) {
+    return sum.apply(this,num1,num2)
+}
+console.log(test(1,2))
+```
+`bind`：创建一个函数的实例，其this值会被绑定到传给bind函数的值,不过它返回的是一个函数，所以还需要触发
+```
+function sum() {
+    alert(this.color)
+}
+let color = 'white'
+let o = {
+    color:'red'
+};
+
+sum.bind(o)();
+```
+- 基本包装类型，为了便于操作基本操作类型的值，js还提供了三个特殊的引用类型，`Boolean`、`Number`、`String`，每当读取一个对应的基本类型的值的
+时候，就会在后台生成了对应的基本包装类型对象，从而让我们能够调用对应的方法，那么，包装对象跟其他对象有什么区别呢?
+```
+let test = "some text";
+test.substring(0,2)  //so
+```
+在前面我们说过，字符串只是一个基本类型，它本来是没有方法的，那为什么又有substring方法了呢？原因就是js在后台给我们做了处理，当我们执行`test.substring(0,2)`
+这个方法的时候，实际上后台帮我们做了三个事情，第一个事情是将字符串变为一个String的实例，第二个事情是调用实例中的那个`substring`方法，最后将新建的对象销毁
+```
+let test3 = new String("some text");
+test2 = test3.substring(0,2);
+test3 = null;  
+```
+将这些基本类型的值当成引用类型调用的时候，都会出现如上的过程，一定要注意，这个基本包装类型对象会被销毁！
